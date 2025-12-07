@@ -9,18 +9,17 @@ function validateEnv() {
   }
 }
 
-exports.handler = async function handler(event) {
+export async function handler(event) {
   if (event.httpMethod !== "POST") {
     return {
       statusCode: 405,
-      headers: { "Access-Control-Allow-Origin": "*" },
       body: JSON.stringify({ error: "Method Not Allowed" }),
     };
   }
 
   try {
     validateEnv();
-    const { user = "guest" } = JSON.parse(event.body || "{}") || {};
+    const { user = "guest" } = JSON.parse(event.body || "{}");
 
     const response = await fetch("https://api.openai.com/v1/chatkit/sessions", {
       method: "POST",
@@ -45,14 +44,12 @@ exports.handler = async function handler(event) {
 
     return {
       statusCode: 200,
-      headers: { "Access-Control-Allow-Origin": "*" },
       body: JSON.stringify({ client_secret: data.client_secret }),
     };
   } catch (error) {
     console.error("ChatKit session error", error);
     return {
       statusCode: 500,
-      headers: { "Access-Control-Allow-Origin": "*" },
       body: JSON.stringify({ error: error.message || "Server error" }),
     };
   }
