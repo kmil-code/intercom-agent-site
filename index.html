@@ -4,31 +4,22 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Intercom Assistant</title>
-
-  <!-- Load OpenAI Chat client -->
-  <script src="https://cdn.openai.com/chat/latest/client.js"></script>
-
-  <!-- Configure your agent -->
-  <script>
-    window.Chat = {
-      agentId: "asst_CO0iNmyTHmUGDSNtISaGq1R6",
-      title: "Intercom Assistant",
-      subtitle: "Ask me anything about Intercom"
-    };
-  </script>
-
-  <style>
-    body {
-      font-family: sans-serif;
-      margin: 40px;
-    }
-  </style>
 </head>
-
 <body>
   <h1>Intercom Assistant</h1>
 
-  <!-- The widget -->
-  <openai-chat></openai-chat>
+  <!-- OpenAI Chat Widget -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/@openai/chat-widget@latest/dist/chat-widget.js"
+    defer
+  ></script>
+
+  <script>
+    window.chatWidgetConfig = {
+      apiKey: "YOUR_PUBLIC_OPENAI_WIDGET_KEY",
+      assistantId: "YOUR_ASSISTANT_ID"
+    };
+  </script>
+
 </body>
 </html>
