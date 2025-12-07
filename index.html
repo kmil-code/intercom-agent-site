@@ -3,23 +3,412 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Intercom Assistant</title>
+  <title>Agent Kit Chat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script
+    src="https://cdn.platform.openai.com/deployments/chatkit/chatkit.js"
+    async
+    data-chatkit-script
+  ></script>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #0c111c;
+      --panel: #111827;
+      --card: #0f172a;
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+      --accent: #22d3ee;
+      --border: #1f2937;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Inter", system-ui, -apple-system, sans-serif;
+      background: radial-gradient(circle at top, rgba(34, 211, 238, 0.08), transparent 45%),
+        radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.08), transparent 30%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px;
+    }
+
+    .page {
+      width: min(1200px, 100%);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 28px;
+      align-items: start;
+    }
+
+    .card {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px 24px;
+      box-shadow: 0 20px 70px rgba(0, 0, 0, 0.35);
+    }
+
+    h1 {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 28px;
+      margin: 0 0 8px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(34, 211, 238, 0.1);
+      color: var(--text);
+      padding: 8px 12px;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 600;
+      border: 1px solid rgba(34, 211, 238, 0.25);
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .list {
+      list-style: none;
+      padding: 0;
+      margin: 14px 0 0;
+      display: grid;
+      gap: 8px;
+    }
+
+    .list li {
+      display: grid;
+      grid-template-columns: 20px 1fr;
+      gap: 10px;
+      align-items: start;
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .list span {
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .status {
+      margin-top: 14px;
+      font-size: 14px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .diagnostics {
+      margin-top: 16px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      display: grid;
+      gap: 10px;
+    }
+
+    .diagnostics button {
+      align-self: flex-start;
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(34, 211, 238, 0.12);
+      color: var(--text);
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .diagnostics button:hover {
+      background: rgba(34, 211, 238, 0.18);
+    }
+
+    .diagnostics pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .status .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--muted);
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.05);
+    }
+
+    .status.ready .dot {
+      background: #34d399;
+    }
+
+    .status.error .dot {
+      background: #f87171;
+    }
+
+    #chatkit-embed {
+      min-height: 520px;
+      border-radius: 14px;
+      border: 1px dashed var(--border);
+      background: rgba(17, 24, 39, 0.65);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+    }
+
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 2px 6px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+  </style>
 </head>
 <body>
-  <h1>Intercom Assistant</h1>
+  <main class="page">
+    <section class="card">
+      <div class="badge">Agent Kit + ChatKit embed</div>
+      <h1>
+        Launch your GPT-powered agent
+      </h1>
+      <p>
+        This page hosts a ChatKit widget wired to your Agent Builder workflow. Add your API key
+        and workflow ID as Netlify environment variables to generate client secrets for the chat
+        session. The frontend only receives the short-lived <code>client_secret</code>, keeping your
+        server key secure.
+      </p>
+      <ul class="list">
+        <li>
+          <strong>1.</strong>
+          <span>Set <code>OPENAI_API_KEY</code> and <code>WORKFLOW_ID</code> in your deployment.</span>
+        </li>
+        <li>
+          <strong>2.</strong>
+          <span>Reload this page; we create a session per visitor/device.</span>
+        </li>
+        <li>
+          <strong>3.</strong>
+          <span>Chat with your agent below using the embeddable widget.</span>
+        </li>
+      </ul>
+      <div class="status" id="status"><span class="dot"></span><span data-status>Loading ChatKit…</span></div>
+      <div class="diagnostics">
+        <strong>Troubleshooting tips</strong>
+        <p>
+          If the chat never loads, run the checks below. Copy the output when asking for help.
+        </p>
+        <button id="run-diagnostics" type="button">Run diagnostics</button>
+        <pre id="diagnostics-log">No diagnostics run yet.</pre>
+      </div>
+    </section>
 
-  <!-- OpenAI Chat Widget -->
-  <script
-    src="https://cdn.jsdelivr.net/npm/@openai/chat-widget@latest/dist/chat-widget.js"
-    defer
-  ></script>
+    <section class="card">
+      <div class="pill">Secure client secret fetch</div>
+      <div id="chatkit-embed">Waiting for ChatKit script…</div>
+    </section>
+  </main>
 
   <script>
-    window.chatWidgetConfig = {
-      apiKey: "YOUR_PUBLIC_OPENAI_WIDGET_KEY",
-      assistantId: "YOUR_ASSISTANT_ID"
-    };
-  </script>
+    const statusEl = document.querySelector("[data-status]");
+    const statusWrap = document.getElementById("status");
+    const diagnosticsLog = document.getElementById("diagnostics-log");
+    const diagnosticsBtn = document.getElementById("run-diagnostics");
+    const chatkitScript = document.querySelector("script[data-chatkit-script]");
 
+    function setStatus(message, variant = "idle") {
+      if (statusEl) statusEl.textContent = message;
+      statusWrap?.classList.remove("ready", "error");
+      if (variant === "ready") statusWrap?.classList.add("ready");
+      if (variant === "error") statusWrap?.classList.add("error");
+    }
+
+    function logDiagnostic(message) {
+      const existing = diagnosticsLog?.textContent === "No diagnostics run yet." ? [] : diagnosticsLog?.textContent.split("\n");
+      const next = [...(existing || []), `[${new Date().toISOString()}] ${message}`];
+      if (diagnosticsLog) diagnosticsLog.textContent = next.slice(-12).join("\n");
+      console.info(message);
+    }
+
+    function getDeviceId() {
+      const key = "chatkit-device-id";
+      const existing = localStorage.getItem(key);
+      if (existing) return existing;
+      const fresh = crypto.randomUUID();
+      localStorage.setItem(key, fresh);
+      return fresh;
+    }
+
+    async function fetchClientSecret() {
+      const response = await fetch("/api/chatkit-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user: getDeviceId() }),
+      });
+
+      const payload = await response.json();
+      if (!response.ok) {
+        throw new Error(payload.error || "Unable to fetch client secret");
+      }
+      logDiagnostic("Function call succeeded; received client_secret.");
+      return payload.client_secret;
+    }
+
+    function waitForChatKit(chatElement, attempts = 50) {
+      return new Promise((resolve, reject) => {
+        const interval = setInterval(() => {
+          const hasEmbedApi = chatElement && typeof chatElement.setOptions === "function";
+          const hasMountApi = window.ChatKit && typeof window.ChatKit.mount === "function";
+          if (hasEmbedApi || hasMountApi) {
+            clearInterval(interval);
+            resolve();
+          } else if (--attempts <= 0) {
+            clearInterval(interval);
+            reject(new Error("ChatKit script did not load."));
+          }
+        }, 200);
+      });
+    }
+
+    async function mountChat() {
+      const chatElement = document.getElementById("chatkit-embed");
+      if (!chatElement) return;
+
+      try {
+        setStatus("Waiting for ChatKit script…");
+        logDiagnostic("Waiting for ChatKit script to expose APIs…");
+        await waitForChatKit(chatElement);
+
+        const api = {
+          async getClientSecret(existing) {
+            try {
+              if (existing) return existing;
+              setStatus("Requesting a fresh client secret…");
+              logDiagnostic("Fetching client_secret from /api/chatkit-session…");
+              return await fetchClientSecret();
+            } catch (error) {
+              console.error("Client secret fetch error", error);
+              setStatus(error.message, "error");
+              throw error;
+            }
+          },
+        };
+
+        if (window.ChatKit?.mount) {
+          await window.ChatKit.mount({
+            element: chatElement,
+            api,
+            theme: {
+              appearance: "dark",
+              color: { brand: "#22d3ee" },
+            },
+          });
+        } else if (typeof chatElement.setOptions === "function") {
+          chatElement.setOptions({
+            api,
+            theme: {
+              appearance: "dark",
+              color: { brand: "#22d3ee" },
+            },
+          });
+        }
+
+        setStatus("ChatKit is ready. Say hello to your agent!", "ready");
+        chatElement.textContent = "";
+      } catch (error) {
+        console.error("ChatKit mount error", error);
+        chatElement.textContent = "Could not load ChatKit. Check your API key/workflow ID and network.";
+        setStatus(error.message || "Unable to load ChatKit", "error");
+        logDiagnostic(`ChatKit mount error: ${error.message || error}`);
+      }
+    }
+
+    function wireScriptEvents() {
+      if (!chatkitScript) {
+        logDiagnostic("No ChatKit script tag found in the page.");
+        return;
+      }
+
+      chatkitScript.addEventListener("load", () => {
+        logDiagnostic("ChatKit script loaded (onload fired).");
+      });
+
+      chatkitScript.addEventListener("error", () => {
+        setStatus("ChatKit script failed to load. Check network/CSP.", "error");
+        logDiagnostic("ChatKit script failed to load—verify the CDN URL and that your deployment allows external scripts.");
+      });
+    }
+
+    async function runDiagnostics() {
+      logDiagnostic("Starting diagnostics…");
+      logDiagnostic(`Location: ${window.location.href}`);
+
+      if (chatkitScript) {
+        logDiagnostic(`Found ChatKit script tag -> ${chatkitScript.src}`);
+      } else {
+        logDiagnostic("ChatKit script tag missing. The embed cannot initialize.");
+      }
+
+      if (window.ChatKit) {
+        logDiagnostic("window.ChatKit is defined—script likely loaded.");
+      } else {
+        logDiagnostic("window.ChatKit is not defined yet.");
+      }
+
+      try {
+        const res = await fetch("/api/chatkit-session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user: "diagnostic-user" }),
+        });
+        const text = await res.text();
+        logDiagnostic(`Function POST /api/chatkit-session responded ${res.status}: ${text}`);
+      } catch (error) {
+        logDiagnostic(`Function call failed: ${error.message || error}`);
+      }
+    }
+
+    window.addEventListener("load", mountChat);
+    window.addEventListener("DOMContentLoaded", () => {
+      wireScriptEvents();
+      diagnosticsBtn?.addEventListener("click", () => runDiagnostics());
+    });
+  </script>
 </body>
 </html>
