@@ -236,17 +236,16 @@
       return payload.client_secret;
     }
 
-    function waitForChatKit(chatElement, attempts = 50) {
+    function waitForChatKit(chatElement, attempts = 20) {
       return new Promise((resolve, reject) => {
         const interval = setInterval(() => {
-          const hasEmbedApi = chatElement && typeof chatElement.setOptions === "function";
-          const hasMountApi = window.ChatKit && typeof window.ChatKit.mount === "function";
-          if (hasEmbedApi || hasMountApi) {
+          if ((chatElement && typeof chatElement.setOptions === "function") ||
+            (window.ChatKit && typeof window.ChatKit.mount === "function")) {
             clearInterval(interval);
             resolve();
           } else if (--attempts <= 0) {
             clearInterval(interval);
-            reject(new Error("ChatKit script did not load."));
+            reject(new Error("ChatKit script did not load"));
           }
         }, 200);
       });
@@ -257,20 +256,11 @@
       if (!chatElement) return;
 
       try {
-        setStatus("Waiting for ChatKit script…");
         await waitForChatKit(chatElement);
-
         const api = {
           async getClientSecret(existing) {
-            try {
-              if (existing) return existing;
-              setStatus("Requesting a fresh client secret…");
-              return await fetchClientSecret();
-            } catch (error) {
-              console.error("Client secret fetch error", error);
-              setStatus(error.message, "error");
-              throw error;
-            }
+            if (existing) return existing;
+            return fetchClientSecret();
           },
         };
 
@@ -296,9 +286,8 @@
         setStatus("ChatKit is ready. Say hello to your agent!", "ready");
         chatElement.textContent = "";
       } catch (error) {
-        console.error("ChatKit mount error", error);
-        chatElement.textContent = "Could not load ChatKit. Check your API key/workflow ID and network.";
-        setStatus(error.message || "Unable to load ChatKit", "error");
+        console.error(error);
+        setStatus(error.message, "error");
       }
     }
 
