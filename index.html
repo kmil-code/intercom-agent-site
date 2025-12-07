@@ -1,15 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Intercom Assistant</title>
 
-  <!-- OpenAI Chat Completions Widget -->
   <script
-    src="https://cdn.jsdelivr.net/npm/@openai/chat-completions@latest/dist/widget.js"
-    type="module">
-  </script>
+    src="https://cdn.jsdelivr.net/npm/@openai/chatgpt-assistant@latest/dist/chatgpt-assistant.min.js"
+    defer
+  ></script>
 
   <style>
     body {
@@ -22,17 +20,10 @@
 <body>
   <h1>Intercom Assistant</h1>
 
-  <!-- Chatbot container -->
-  <div id="intercom-assistant"></div>
-
-  <!-- INSTANTIATE WIDGET -->
-  <script>
-    const widget = new ChatCompletionsWidget({
-      agentId: "asst_CO0iNmyTHmUGDSNtISaGq1R6",   // your real agent ID
-      element: document.getElementById("intercom-assistant"),
-      theme: "light",
-      instructions: "You are the Intercom Assistant."
-    });
-  </script>
+  <!-- ChatGPT Agent Embed -->
+  <chatgpt-assistant
+    assistant-id="asst_CO0iNmyTHmUGDSNtISaGq1R6"
+    style="width: 100%; height: 700px; border: 1px solid #ccc;"
+  ></chatgpt-assistant>
 </body>
 </html>
