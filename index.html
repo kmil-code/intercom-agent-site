@@ -1,18 +1,26 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Intercom Assistant</title>
 
-  <script
-    src="https://cdn.jsdelivr.net/npm/@openai/chatgpt-assistant@latest/dist/chatgpt-assistant.min.js"
-    defer
-  ></script>
+  <!-- Load OpenAI Chat client -->
+  <script src="https://cdn.openai.com/chat/latest/client.js"></script>
+
+  <!-- Configure your agent -->
+  <script>
+    window.Chat = {
+      agentId: "asst_CO0iNmyTHmUGDSNtISaGq1R6",
+      title: "Intercom Assistant",
+      subtitle: "Ask me anything about Intercom"
+    };
+  </script>
 
   <style>
     body {
-      font-family: Arial, sans-serif;
-      padding: 40px;
+      font-family: sans-serif;
+      margin: 40px;
     }
   </style>
 </head>
@@ -20,10 +28,7 @@
 <body>
   <h1>Intercom Assistant</h1>
 
-  <!-- ChatGPT Agent Embed -->
-  <chatgpt-assistant
-    assistant-id="asst_CO0iNmyTHmUGDSNtISaGq1R6"
-    style="width: 100%; height: 700px; border: 1px solid #ccc;"
-  ></chatgpt-assistant>
+  <!-- The widget -->
+  <openai-chat></openai-chat>
 </body>
 </html>
