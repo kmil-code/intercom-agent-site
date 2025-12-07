@@ -1,18 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>My Agent</title>
-    <script
-      src="https://cdn.jsdelivr.net/npm/@openai/agentkit-web/dist/agentkit-web.js"
-      defer
-    ></script>
-  </head>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Intercom Assistant</title>
 
-  <body style="font-family: sans-serif; padding: 40px;">
-    <h2>Intercom Assistant</h2>
+  <!-- OpenAI Chat Completions Widget -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/@openai/chat-completions@latest/dist/widget.js"
+    type="module">
+  </script>
 
-    <!-- Your embedded agent -->
-    <openai-chat agent-id="asst_CO0iNmyTHmUGDSNtISaGq1R6"></openai-chat>
-  </body>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 40px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Intercom Assistant</h1>
+
+  <!-- Chatbot container -->
+  <div id="intercom-assistant"></div>
+
+  <!-- INSTANTIATE WIDGET -->
+  <script>
+    const widget = new ChatCompletionsWidget({
+      agentId: "asst_CO0iNmyTHmUGDSNtISaGq1R6",   // your real agent ID
+      element: document.getElementById("intercom-assistant"),
+      theme: "light",
+      instructions: "You are the Intercom Assistant."
+    });
+  </script>
+</body>
 </html>
